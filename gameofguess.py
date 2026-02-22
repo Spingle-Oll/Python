@@ -1,5 +1,8 @@
 import random
-
+from PIL import Image
+import requests
+import climage
+from io import BytesIO
 
 amountOfTries = 0
 HintWord = "hint"
@@ -24,16 +27,21 @@ if ChoiceOfRange == "1":
           if number > 5:
               print("Псс. Число больше 5")
           else:
-              print("Псс. Число меньше 5")
+              print("Псс. Число не больше 5")
       elif answer != HintWord and answer.isdigit():
           answer = int(answer)
       else:
-          print("Вы ввели не число и не слово-подсказку")
+          print("Вы ввели не число и не слово-подсказку. Вы нарушили павило:", RulesList[4])
           break
       amountOfTries = amountOfTries + 1
 
       if answer == number:
           print("Вы угадали! Задуманное число ", number, "!")
+          response = requests.get("https://masterpiecer-images.s3.yandex.net/5fb0b52da7f3537:upscaled")
+          img_data = response.content
+          image = BytesIO(img_data)
+          output = climage.convert(image)
+          print(output)
           break
 
       elif amountOfTries < 3 and answer != number:
@@ -50,18 +58,23 @@ elif ChoiceOfRange == "2":
         if answer.lower().strip() == HintWord:
             amountOfTries = amountOfTries - 1
             AmountOfHint = AmountOfHint + 1
-            RandomPluse = random.randint(1, 15)
-            HintNumber = number + RandomPluse
-            print("Псс. Число в районе", HintNumber)
+            NumberForHint = str(number)
+            HintLastNumber = NumberForHint[-1:]
+            print("Псс. Последняя цифра числа", HintLastNumber)
         elif answer != HintWord and answer.isdigit():
             answer = int(answer)
         else:
-            print("Вы ввели не число и не слово-подсказку")
+            print("Вы ввели не число и не слово-подсказку. Вы нарушили павило:", RulesList[4])
             break
         amountOfTries = amountOfTries + 1
 
         if answer == number:
             print("Вы угадали! Задуманное число ", number, "!")
+            response = requests.get("https://masterpiecer-images.s3.yandex.net/5fb0b52da7f3537:upscaled")
+            img_data = response.content
+            image = BytesIO(img_data)
+            output = climage.convert(image)
+            print(output)
             break
 
         elif amountOfTries < 3 and answer != number:
@@ -72,4 +85,4 @@ elif ChoiceOfRange == "2":
         elif amountOfTries == 3:
             print("Потыки кончились.", "Задуманное число было", number, "Ничего, попробуйте снова.")
 else:
-    print("Вы не выбрали диапозон")
+    print("Вы не выбрали диапозон. Вы нарушили правило:", RulesList[5])
